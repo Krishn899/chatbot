@@ -9,10 +9,30 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from server.main import chatmodel
-
+from utils import generate_thread_id,reset_chat,load_conversation,change_mssg_format
 
 if 'message_history' not in st.session_state:
     st.session_state['message_history']=[]
+
+if 'thread_id' not in st.session_state:
+     st.session_state['thread_id']=generate_thread_id()
+
+if 'chat_threads' not in st.session_state:
+     st.session_state['chat_threads']=[]
+
+st.sidebar.title('Langgraph Chatbot')
+
+if st.sidebar.button('New Chat'):
+     reset_chat()
+
+st.sidebar.header('My Conversations')
+
+for thread_id in st.session_state['chat_threads']:
+     if st.sidebar.button(str(thread_id)):
+          st.session_state['thread_id']=thread_id
+          messages=load_conversation(thread_id)
+          st.session_state['message_history']=change_mssg_format(messages=messages)
+                    
 
 for message in st.session_state['message_history']:
     with st.chat_message(message['role']):
@@ -20,7 +40,7 @@ for message in st.session_state['message_history']:
 
 
 user_input=st.chat_input('Type here')
-thread_id='1'
+thread_id=st.session_state['thread_id']
 config={'configurable':{'thread_id':thread_id}}
 if user_input:
     st.session_state['message_history'].append({'role':'user','content':user_input})
