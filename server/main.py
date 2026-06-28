@@ -9,7 +9,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 
 load_dotenv()
-HF_API = os.getenv('hf_api')
+HF_API = os.getenv('HUGGINGFACE_API_KEY')
 
 
 def build_model() -> ChatHuggingFace:
@@ -54,8 +54,10 @@ def run_cli() -> None:
             break
 
         config = {'configurable': {'thread_id': thread_id}}
-        response = chatmodel.invoke({'messages': [HumanMessage(content=user_message)]}, config=config)
-        print('AI: ', response['messages'][-1].content)
+        response_stream = chatmodel.stream({'messages': [HumanMessage(content=user_message)]}, config=config,stream_mode='messages')
+        for message_chunk, metadata in response_stream:
+            if message_chunk.content:
+                print(message_chunk.content,end=' ',flush=True)
 
 
 if __name__ == '__main__':
