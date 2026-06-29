@@ -1,7 +1,8 @@
 import uuid
 import streamlit as st
 from server.main import chatmodel
-from langchain_core.messages import HumanMessage,AIMessage
+from langchain_core.messages import HumanMessage
+from server.main import checkpointer
 
 def generate_thread_id():
     thread_id=uuid.uuid4()
@@ -30,3 +31,10 @@ def change_mssg_format(messages):
             role='assistant'
         temp_mssg.append({'role':role,'content':message.content})
     return temp_mssg
+
+
+def unique_checkpointers()->list:
+    all_threads=set()
+    for checkpoint in checkpointer.list(None):
+        all_threads.add(checkpoint.config['configurable']['thread_id'])
+    return list(all_threads)

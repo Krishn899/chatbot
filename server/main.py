@@ -4,10 +4,11 @@ from typing import Annotated, TypedDict
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
-
+import sqlite3
+ 
 load_dotenv()
 HF_API = os.getenv('HUGGINGFACE_API_KEY')
 
@@ -33,7 +34,9 @@ def chat(state: ChatModel) -> ChatModel:
     return {'messages': [response]}
 
 
-checkpointer = MemorySaver()
+
+conn=sqlite3.connect(database='chatbot.db',check_same_thread=False)
+checkpointer = SqliteSaver(conn=conn)
 graph = StateGraph(ChatModel)
 
 graph.add_node('chat', chat)

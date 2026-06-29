@@ -9,7 +9,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from server.main import chatmodel
-from utils import generate_thread_id,reset_chat,load_conversation,change_mssg_format
+from utils import generate_thread_id,reset_chat,load_conversation,change_mssg_format,unique_checkpointers
 
 if 'message_history' not in st.session_state:
     st.session_state['message_history']=[]
@@ -18,7 +18,7 @@ if 'thread_id' not in st.session_state:
      st.session_state['thread_id']=generate_thread_id()
 
 if 'chat_threads' not in st.session_state:
-     st.session_state['chat_threads']=[]
+     st.session_state['chat_threads']=unique_checkpointers()
 
 st.sidebar.title('Langgraph Chatbot')
 
